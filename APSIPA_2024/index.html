@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Research Title</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Muli, poppins;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 95%;
+            margin: auto;
+            overflow: hidden;
+            text-align: justify;
+        }
+        header {
+            background: #0a4eb3;
+            color: #fff;
+            padding-top: 20px;
+            border-bottom: #77a6f7 3px solid;
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        .main {
+            padding: 10px;
+            background: #f4f4f4;
+        }
+        .main h2 {
+            color: #333;
+        }
+        footer {
+            background: #0a4eb3;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #333;
+            margin-left: 0;
+            width: 1000px;
+        }
+        section {
+            width: 1000px;
+        }   
+        h1 {
+            width: 1000px;
+            font-size: 24px;
+            margin: 0;
+            padding: 0;
+        }
+        .author-line h2, .author-line p {
+            display: inline;
+        }
+    
+        .author-line h2 {
+            font-size: 1.2em; /* Adjust this value to set the font size */
+        }
+
+        .sampleid-line h3, .sampleid-line p {
+            display: inline;
+        }
+    
+        .sampleid-line h3 {
+            font-size: 1.2em; /* Adjust this value to set the font size */
+        }
+        footer {
+            text-align: left;
+        }
+        .audio-table {
+            margin-left: 0;
+            width: auto; /* adjust as needed */
+        }
+        th{
+            text-align: center;
+        }
+        .floating-box {
+            position: absolute;
+            right: 10%; /* Adjust this value to set the distance from the right */
+            top: 2%; /* Adjust this value to set the distance from the top */
+            width: 25%; /* Adjust this value to set the width of the box */
+        }
+        .floating-box img {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Evaluating the Intelligibility of L2 Utterances Using a Native Speaker’s Shadowing Data and Sequence to Sequence Voice Conversion</h1>
+            
+            <section id="author-institution">
+                <div class="author-line">
+                    <h2>Author</h2><p>: </p>
+                </div>
+                <div class="author-line">
+                    <h2>Institution</h2><p>: </p>
+                </div>
+            </section>
+        </div>
+    </header>
+    <div class="container main">
+        <section id="abstract">
+            <h2>Abstract</h2>
+            <p>
+                L2 speakers’ utterances are sometimes difficult to comprehend due to mispronunciation and improper prosody. In the Computer-Aided Pronunciation Training (CAPT) process, providing textual feedback on unexpected segments using word or phoneme-level recognition is not straightforward. Inspired by language teachers who correct students’ pronunciation through a voice-to-voice process, this study utilizes a unique semi-parallel dataset: combined with non-native (L2) speakers reading aloud utterances, native (L1) speakers’ shadowing and script shadowing utterances. We explore the possibility of replicating L1 shadowing of L2 using Voice Conversion (VC) techniques, creating a virtual shadower. Experimental results demonstrate the feasibility of the VC system in simulating L1’s shadowing behavior. The output of the virtual shadower system shows a high correlation with practical L1 shadowing utterances in both linguistic and acoustic aspects, such as Word Error Rate and Mel-Cepstral Distortion.
+            </p>
+        </section>
+        <section id="introduction">
+            <p>
+                <img src="figure/l1shadowingl2_w_lb.png" alt="L1 shadowing L2" width="750">
+            </p>
+        </section>
+        <section id="Audio">
+            <h2>Audio Samples</h2>
+            <p>
+                <div class="sampleid-line">
+                    <h3>0668-0004</h3><p>: THE CHILDREN WHO ARE THE SAME GENERATIONS ARE SUFFERING FROM HUNGER. </p>
+                </div>
+                    <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Source: L2 Reading</th>
+                            <th>Target Shadowing (S1)</th>
+                            <th>Target: Script Shadowing (SS)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Source/Target</td>
+                            <td><audio controls><source src="wav/V000_R_eval_0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/V006_S1_eval_0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/V006_SS_eval_0668-0004.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>$$L2_{R}-L1_{S1}$$</td>
+                            <td>$$L2_{R}-L1_{SS}$$</td>
+                            <td>$$L1_{SS}-L1_{S1}$$</td>
+                        </tr>
+                            <td>VTN</td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1S1_0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1SS_0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L1SS_L1S1_0668-0004.wav" type="audio/mpeg"></audio></td>
+                        <tr>
+                            <td>AAS-VC</td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1S1_0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1SS_0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L1SS_L1S1_0668-0004.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </p>
+            <hr>
+            <p>
+                <div class="sampleid-line">
+                    <h3>0678-0002</h3><p>: IT IS IMPORTANT TO IDENTIFY THE CORRECT SOURCE. </p>
+                </div>
+                <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Source: L2 Reading</th>
+                            <th>Target Shadowing (S1)</th>
+                            <th>Target: Script Shadowing (SS)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Source/Target</td>
+                            <td><audio controls><source src="wav/V000_R_eval_0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/V006_S1_eval_0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/V006_SS_eval_0678-0002.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>$$L2_{R}-L1_{S1}$$</td>
+                            <td>$$L2_{R}-L1_{SS}$$</td>
+                            <td>$$L1_{SS}-L1_{S1}$$</td>
+                        </tr>
+                            <td>VTN</td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1S1_0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1SS_0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L1SS_L1S1_0678-0002.wav" type="audio/mpeg"></audio></td>
+                        <tr>
+                            <td>AAS-VC</td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1S1_0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L2R_L1SS_0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="wav/VTN_L1SS_L1S1_0678-0002.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </p>
+        </section>
+    </div>
+    <footer>
+        <p>© 2024 All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
