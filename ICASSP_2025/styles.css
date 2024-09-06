@@ -1,0 +1,12 @@
+/* Media Queries for Responsive Design */
+@media (min-width: 1000px) {
+    main {
+        flex-direction: row;
+    }
+    section {
+        flex: 3;
+    }
+    aside {
+        flex: 1;
+    }
+}

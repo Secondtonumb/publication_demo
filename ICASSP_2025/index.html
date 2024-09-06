@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICASSP_2025_Virtual_Shadower_Utlizing_Latent_Speech_Representation</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Muli, poppins;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 98%;
+            margin: auto;
+            overflow: hidden;
+        }
+        header {
+            background: #0a4eb3;
+            color: #fff;
+            padding-top: 20px;
+            border-bottom: #77a6f7 3px solid;
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            list-style: none;
+        }
+        header li {
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        .main {
+            padding: 10px;
+            background: #f4f4f4;
+        }
+        .main h2 {
+            color: #333;
+        }
+        footer {
+            background: #0a4eb3;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #333;
+            margin-left: 0;
+            width: auto;
+        }
+        section {
+            width: auto;
+        }   
+        h1 {
+            width: auto;
+            font-size: 24px;
+            margin: 0;
+            padding: 0;
+        }
+        .author-line h2, .author-line p {
+            display: inline;
+        }
+    
+        .author-line h2 {
+            font-size: 1.2em; /* Adjust this value to set the font size */
+        }
+
+        .sampleid-line h3, .sampleid-line p {
+            display: inline;
+        }
+    
+        .sampleid-line h3 {
+            font-size: 1.2em; /* Adjust this value to set the font size */
+        }
+        /* Make sampleid-line into a accordion style */
+        .sampleid-line h3 {
+            cursor: pointer;
+            padding: 5px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 25px;
+            transition: 0.2s;
+        }
+        .sampleid-line h3.active, .sampleid-line h3:hover {
+            background-color: #ddd;
+        }
+        .sampleid-line p {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+        .sampleid-line p.show {
+            display: block;
+        }
+        /* Show the sampleid-line p when h3 is clicked */
+        .sampleid-line h3:after {
+            color: black;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+        .sampleid-line h3.active:after {
+            content: "\2212";
+        }
+        /* styles.css */
+        .accordion-button {
+            font-family: Muli, poppins;
+            background-color: #f1f1f1;
+            border: none;
+            padding: 5px;
+            text-align: left;
+            outline: auto;
+            font-size: 25px;
+            cursor: pointer;
+            width: auto;
+            border-bottom: 1px solid #ddd;
+            transition: 0.4s;
+        }
+
+        .accordion-button.active {
+            background-color: #ddd; /* Highlight the active section */
+        }
+
+        .accordion-content {
+            width: auto;
+            font-family: Muli, poppins;
+            display: none; /* Initially hidden */
+            padding: 2px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        footer {
+            width: auto;
+            text-align: left;
+        }
+        .audio-table {
+            width: auto; /* adjust as needed */
+            
+        }
+        th, td {
+            border: 0.5px solid black; /* Adds a black border around cells */
+            padding: auto; /* Adds some padding around the text */
+            text-align: left; /* Aligns text to the left */
+        }
+        
+        th {
+            background-color: #f2f2f2; /* Light grey background for header cells */
+        }
+        audio::-webkit-media-controls-volume-slider {
+            display: none;
+        }
+          
+        audio::-webkit-media-controls-mute-button {
+            display: none;
+        }
+        audio {
+            width: 100px;
+        }
+        th{
+            text-align: center;
+        }
+        .floating-box {
+            position: absolute;
+            right: 10%; /* Adjust this value to set the distance from the right */
+            top: 2%; /* Adjust this value to set the distance from the top */
+            width: 25%; /* Adjust this value to set the width of the box */
+        }
+        .floating-box img {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Virtual Native Speaker Shadowing System for Non-Native Speakers Utilizing Latent Speech Representations</h1>
+            
+            <section id="author-institution">
+                <div class="author-line">
+                    <h2>Author</h2><p>: </p>
+                </div>
+                <div class="author-line">
+                    <h2>Institution</h2><p>: </p>
+                </div>
+            </section>
+        </div>
+    </header>
+    <div class="container main">
+        <section id="abstract">
+            <h2>Abstract</h2>
+            <p>
+                TODO
+            </p>
+        </section>
+        <section id="introduction">
+            <p>
+                <img src="figure/l1shadowingl2_w_lb.png" alt="L1 shadowing L2" width="750">
+            </p>
+        </section>
+        <section id="introduction">
+            <p>
+                <img src="figure/purposed_method.png" alt="Purposed Methods" width="750">
+            </p>
+        </section>
+        <section id="Audio">
+            <h2>Audio Samples (Click ID to display reference text)</h2>
+            <p>
+                <div class="accordion">
+                    <button class="accordion-button">0668-0004</button>
+                    <div class="accordion-content">
+                        <p>THE CHILDREN WHO ARE THE SAME GENERATIONS ARE SUFFERING FROM HUNGER. </p>
+
+                    </div>
+                </div>
+                    <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Source </th>
+                            <th colspan="8">Target </th>
+                            <th colspan="2">Reference</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" colspan="2"> \(L2_{R}\)</th>
+                            <th colspan="4"> Mel. </th>
+                            <th colspan="4"> PPG-BNF  </th>
+                            <th rowspan="2">\(L1_{S1}\)</th>
+                            <th rowspan="2">\(L1_{SS}\)</th>
+                        </tr>
+                        <tr>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.FT</th>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.Ft</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><audio controls><source src="output/L2R/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td>PPG-BNF</td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1_ppgtomel/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS_ppgtomel/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+
+                            <td rowspan="2"><audio controls><source src="output/L1S1/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td rowspan="2"><audio controls><source src="output/L1SS/0668-0004.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                            
+                            <td>HuBERT</td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1S1/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L1SStoL1S1_FT_L2RtoL1S1/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS_FT_L2RtoL1S1_Dec/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1S1/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L1SStoL1S1_FT_L2RtoL1S1/0668-0004.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS_FT_L2RtoL1S1_Dec/0668-0004.wav" type="audio/mpeg"></audio></td>
+                    </tbody>
+                </table>
+            </p>
+            <p>
+                <div class="accordion">
+                    <button class="accordion-button">0750-0002</button>
+                    <div class="accordion-content">
+                        <p>ON THE OTHER HAND I'M LOOKING FORWARD TO EXPERIENCE THEIR DAILY LIFE BECAUSE I ASPIRE TO LIVING OVERSEAS </p>
+                    </div>
+                </div>
+                    <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Source </th>
+                            <th colspan="8">Target </th>
+                            <th colspan="2">Reference</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" colspan="2"> \(L2_{R}\)</th>
+                            <th colspan="4"> Mel. </th>
+                            <th colspan="4"> PPG-BNF  </th>
+                            <th rowspan="2">\(L1_{S1}\)</th>
+                            <th rowspan="2">\(L1_{SS}\)</th>
+                        </tr>
+                        <tr>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.FT</th>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.Ft</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><audio controls><source src="output/L2R/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td>PPG-BNF</td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1_ppgtomel/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS_ppgtomel/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+
+                            <td rowspan="2"><audio controls><source src="output/L1S1/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td rowspan="2"><audio controls><source src="output/L1SS/0750-0002.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                            
+                            <td>HuBERT</td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1S1/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L1SStoL1S1_FT_L2RtoL1S1/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS_FT_L2RtoL1S1_Dec/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1S1/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L1SStoL1S1_FT_L2RtoL1S1/0750-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS_FT_L2RtoL1S1_Dec/0750-0002.wav" type="audio/mpeg"></audio></td>
+                    </tbody>
+                </table>
+            </p>
+            <p>
+                <div class="accordion">
+                    <button class="accordion-button">0674-0000</button>
+                    <div class="accordion-content">
+                        <p>IT LEADS TO CONFIDENCE. </p>
+                    </div>
+                </div>
+                    <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Source </th>
+                            <th colspan="8">Target </th>
+                            <th colspan="2">Reference</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" colspan="2"> \(L2_{R}\)</th>
+                            <th colspan="4"> Mel. </th>
+                            <th colspan="4"> PPG-BNF  </th>
+                            <th rowspan="2">\(L1_{S1}\)</th>
+                            <th rowspan="2">\(L1_{SS}\)</th>
+                        </tr>
+                        <tr>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.FT</th>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.Ft</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><audio controls><source src="output/L2R/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td>PPG-BNF</td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1_ppgtomel/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS_ppgtomel/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+
+                            <td rowspan="2"><audio controls><source src="output/L1S1/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td rowspan="2"><audio controls><source src="output/L1SS/0674-0000.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                            
+                            <td>HuBERT</td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1S1/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L1SStoL1S1_FT_L2RtoL1S1/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS_FT_L2RtoL1S1_Dec/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1S1/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L1SStoL1S1_FT_L2RtoL1S1/0674-0000.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS_FT_L2RtoL1S1_Dec/0674-0000.wav" type="audio/mpeg"></audio></td>
+                    </tbody>
+                </table>
+            </p>
+            
+            <p>
+                <div class="accordion">
+                    <button class="accordion-button">0678-0002</button>
+                    <div class="accordion-content">
+                        <p>IT IS IMPORTANT TO IDENTIFY THE CORRECT SOURCE.</p>
+                    </div>
+                </div>
+                    <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Source </th>
+                            <th colspan="8">Target </th>
+                            <th colspan="2">Reference</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" colspan="2"> \(L2_{R}\)</th>
+                            <th colspan="4"> Mel. </th>
+                            <th colspan="4"> PPG-BNF  </th>
+                            <th rowspan="2">\(L1_{S1}\)</th>
+                            <th rowspan="2">\(L1_{SS}\)</th>
+                        </tr>
+                        <tr>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.FT</th>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.Ft</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><audio controls><source src="output/L2R/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td>PPG-BNF</td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1_ppgtomel/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS_ppgtomel/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+
+                            <td rowspan="2"><audio controls><source src="output/L1S1/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td rowspan="2"><audio controls><source src="output/L1SS/0678-0002.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                            
+                            <td>HuBERT</td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1S1/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L1SStoL1S1_FT_L2RtoL1S1/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS_FT_L2RtoL1S1_Dec/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1S1/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L1SStoL1S1_FT_L2RtoL1S1/0678-0002.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS_FT_L2RtoL1S1_Dec/0678-0002.wav" type="audio/mpeg"></audio></td>
+                    </tbody>
+                </table>
+            </p>
+            <hr>
+            <p>
+                <div class="accordion">
+                    <button class="accordion-button">0712-0001</button>
+                    <div class="accordion-content">
+                        <p>IT IS FULL OF FEELING THAT YOU ARE WALKING IN THE CITY. </p>
+                    </div>
+                </div>
+                    <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Source </th>
+                            <th colspan="8">Target </th>
+                            <th colspan="2">Reference</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" colspan="2"> \(L2_{R}\)</th>
+                            <th colspan="4"> Mel. </th>
+                            <th colspan="4"> PPG-BNF  </th>
+                            <th rowspan="2">\(L1_{S1}\)</th>
+                            <th rowspan="2">\(L1_{SS}\)</th>
+                        </tr>
+                        <tr>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.FT</th>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.Ft</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><audio controls><source src="output/L2R/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td>PPG-BNF</td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1_ppgtomel/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS_ppgtomel/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+
+                            <td rowspan="2"><audio controls><source src="output/L1S1/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td rowspan="2"><audio controls><source src="output/L1SS/0712-0001.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                            
+                            <td>HuBERT</td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1S1/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L1SStoL1S1_FT_L2RtoL1S1/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS_FT_L2RtoL1S1_Dec/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1S1/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L1SStoL1S1_FT_L2RtoL1S1/0712-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS_FT_L2RtoL1S1_Dec/0712-0001.wav" type="audio/mpeg"></audio></td>
+                    </tbody>
+                </table>
+            </p>
+            <hr>
+
+            <p>
+                <div class="accordation">
+                    <button class="accordion-button">0724-0001</button>
+                    <div class="accordion-content">
+                        <p> IN PETER'S CHILDHOOD HE WAS ORIGINALLY ABANDONED AND NOT HEALTHY BUT NOW HE IS A CHEERFUL BOY AND A GOOD BROTHER WHO LOOKS AFTER THE YOUNGER BROTHER WELL NEXT THIS IS BIEBER </p>
+                </div>
+                    <table class="audio-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Source </th>
+                            <th colspan="8">Target </th>
+                            <th colspan="2">Reference</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" colspan="2"> \(L2_{R}\)</th>
+                            <th colspan="4"> Mel. </th>
+                            <th colspan="4"> PPG-BNF  </th>
+                            <th rowspan="2">\(L1_{S1}\)</th>
+                            <th rowspan="2">\(L1_{SS}\)</th>
+                        </tr>
+                        <tr>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.FT</th>
+                            <th>\(L1_{S1}\)</th>
+                            <th>\(L1_{SS}\)</th>
+                            <th>\(L1_{S1}\) <br>Enc.FT</th>
+                            <th>\(L1_{S1}\) <br>Dec.Ft</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><audio controls><source src="output/L2R/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td>PPG-BNF</td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1_ppgtomel/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS_ppgtomel/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1S1/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_L2RtoL1SS/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td></td>
+                            <td></td>
+
+                            <td rowspan="2"><audio controls><source src="output/L1S1/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td rowspan="2"><audio controls><source src="output/L1SS/0724-0001.wav" type="audio/mpeg"></audio></td>
+                        </tr>
+                            
+                            <td>HuBERT</td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1S1/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L1SStoL1S1_FT_L2RtoL1S1/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttomel_L2RtoL1SS_FT_L2RtoL1S1_Dec/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1S1/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L1SStoL1S1_FT_L2RtoL1S1/0724-0001.wav" type="audio/mpeg"></audio></td>
+                            <td><audio controls><source src="output/AAS_Huberttoppg_L2RtoL1SS_FT_L2RtoL1S1_Dec/0724-0001.wav" type="audio/mpeg"></audio></td>
+                    </tbody>
+                </table>
+            </p>
+            <hr>
+
+        </section>
+    </div>
+    <footer>
+        <p>© 2024 All Rights Reserved.</p>
+    </footer>
+
+<script src="script.js"></script>
+</body>
+</html>
