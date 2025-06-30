@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mispronunciation Detection & Diagnosis</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    .sample {
+      margin-bottom: 40px;
+    }
+    /* New plaintext row-based rendering styles */
+    pre.row {
+      font-family: monospace;
+      white-space: pre;
+      margin: 4px 0;
+    }
+    .gt-mismatch { background-color: #ffe2b3; }
+    .correct-rec { background-color: #d4f8d4; }
+    .false-reject { background-color: #f8d4d4; }
+    .correct-diag { background-color: #add8e6; } /* light blue */
+    .error-diag { background-color: #ffa500; } /* orange */
+    table {
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    td, th {
+      border: 1px solid #aaa;
+      padding: 4px 8px;
+      text-align: center;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Mispronunciation Visualization</h1>
+<div style="margin-bottom: 20px;">
+  <strong>Legend:</strong>
+  <div style="display: flex; gap: 12px; margin-top: 6px;">
+    <div><span class="gt-mismatch" style="padding: 2px 6px;">Mispronunciation</span></div>
+    <div><span class="correct-rec" style="padding: 2px 6px;">True Accept</span></div>
+    <div><span class="false-reject" style="padding: 2px 6px;">False Reject</span></div>
+    <div><span class="correct-diag" style="padding: 2px 6px;">Correct Diagnosis</span></div>
+    <div><span class="error-diag" style="padding: 2px 6px;">Error Diagnosis</span></div>
+  </div>
+</div>
+
+
+<div id="container"></div>
+
+<script>
+// ------- sample data -------
+const samples = [
+  {
+    id: "L2 arctic - S1_002_ISHF05",
+    audio: "./wav/S1_002_ISHF05.wav",
+    canonical: ["ih","z","dh","ih","s","s","iy","s","ao","s","ey","f"],
+    perceived:  ["iy","s","d","iy","s","s","iy","s","ow","s","ey","f"],
+    predictions: [
+      {
+        name: "Model Prediction",
+        hyp_phonemes: ["ih","s","d","ih","s","<eps>","iy","s","ow","s","ey","f"],
+        hyp_mark:    ["=","S","S","=","=","D","=","=","S","=","=","="]
+      }
+    ]
+  },
+  {
+    id: "ERJ-labeled - S1_002_ISHF05",
+    audio: "./wav/S1_002_ISHF05.wav",
+    canonical: ["ih","z","dh","ih","s","s","iy","s","ao","s","ey","f"],
+    perceived:  ["iy","s","d","iy","s","s","iy","s","ow","s","ey","f"],
+    predictions: [
+      {
+        name: "Model Prediction",
+        hyp_phonemes: ["iy","s","d","iy","s","s","iy","s","ow","s","ey","f"],
+        hyp_mark:    ["S","S","S","S","=","=","=","=","S","=","=","="]
+      }
+    ]
+  },
+  {
+    id: "ERJ-unlabeled - S1_002_ISHF05",
+    audio: "./wav/S1_002_ISHF05.wav",
+    canonical: ["ih","z","dh","ih","s","s","iy","s","ao","s","ey","f"],
+    perceived:  ["iy","s","d","iy","s","s","iy","s","ow","s","ey","f"],
+    predictions: [
+    {
+      name: "Model Prediction",
+      hyp_phonemes: ["iy","s","d","iy","s","s","iy","s","ow","s","ey","f"],
+      hyp_mark:    ["S","S","S","S","=","=","=","=","S","=","=","="]
+    }
+    ]
+  },
+  {
+    id: "L2 arctic - S1_003_TUTF02",
+    audio: "./wav/S1_003_TUTF02.wav",
+    canonical: ["dh","ow","z","th","iy","v","z","s","t","ow","l","th","er","t","iy","jh","uw","ah","l","z"],
+    perceived:  ["z","ow","s","th","iy","v","s","s","t","ow","r","th","er","t","iy","zh","ih","ah","r","t"],
+    predictions: [
+      {
+        name: "Model Prediction",
+        hyp_phonemes: ["s","ao","d","<eps>","iy","v","<eps>","<eps>","t","ao","<eps>","th","er","t","iy","jh","uw","ae","l","ah","t","iy"],
+        hyp_mark:    ["S","S","S","D","=","=","D","D","=","S","D","=","=","=","=","=","=","S","=","S","I","I"]
+      }
+    ]
+  },
+  {
+    id: "ERJ-labeled - S1_003_TUTF02",
+    audio: "./wav/S1_003_TUTF02.wav",
+    canonical: ["dh","ow","z","th","iy","v","z","s","t","ow","l","th","er","t","iy","jh","uw","ah","l","z"],
+    perceived:  ["z","ow","s","th","iy","v","s","s","t","ow","r","th","er","t","iy","zh","ih","ah","r","t"],
+    predictions: [
+      {
+        name: "Model Prediction",
+        hyp_phonemes: ["z","ow","s","th","iy","v","s","s","t","ow","r","th","er","t","iy","zh","r","t","<eps>","<eps>"],
+        hyp_mark:    ["S","=","S","=","=","=","S","=","=","=","S","=","=","=","=","S","S","S","D","D"]
+      }
+    ]
+  },
+    {
+    id: "ERJ-unlabeled - S1_003_TUTF02",
+    audio: "./wav/S1_003_TUTF02.wav",
+    canonical: ["dh","ow","z","th","iy","v","z","s","t","ow","l","th","er","t","iy","jh","uw","ah","l","z"],
+    perceived:  ["z","ow","s","th","iy","v","s","s","t","ow","r","th","er","t","iy","zh","ih","ah","r","t"],
+    predictions: [
+      {
+        name: "Model Prediction",
+        hyp_phonemes: ["z","ow","s","th","iy","v","s","s","t","ow","r","th","er","t","iy","zh","<eps>","ah","r","ih","t"],
+        hyp_mark:    ["S","=","S","=","=","=","S","=","=","=","S","=","=","=","=","S","D","=","S","S","I"]
+      }
+    ]
+  },
+];
+
+// --------------------------------
+
+function classify(idx, sample, predictedPhoneme) {
+  const canonicalPh = sample.canonical[idx];
+  const perceivedPh = sample.perceived[idx];
+  const hypPh = predictedPhoneme;
+
+  if (canonicalPh !== perceivedPh && hypPh === perceivedPh) {
+    return "true-reject"; // Correct Diagnosis
+  }
+  if (canonicalPh !== perceivedPh && hypPh !== perceivedPh && hypPh !== "") {
+    return "false-reject"; // Error Diagnosis
+  }
+  if (canonicalPh === perceivedPh && hypPh === perceivedPh) {
+    return "true-accept"; // True Accept
+  }
+  if (canonicalPh !== perceivedPh && hypPh === canonicalPh) {
+    return "false-accept"; // False Accept
+  }
+  if (canonicalPh === perceivedPh && hypPh !== perceivedPh) {
+    return "false-reject"; // False Rejection (renamed from incorrect-rec)
+  }
+}
+
+function renderGroupedSamples(allSamples) {
+  const container = document.getElementById("container");
+  container.innerHTML = "";
+
+  // Group samples by audio filename (extract filename without path and extension)
+  const groups = {};
+  allSamples.forEach(sample => {
+    const match = sample.audio.match(/\/([^\/]+)\.wav$/);
+    const filename = match ? match[1] : sample.audio;
+    if (!groups[filename]) {
+      groups[filename] = [];
+    }
+    groups[filename].push(sample);
+  });
+
+  Object.entries(groups).forEach(([filename, groupSamples]) => {
+    const section = document.createElement("section");
+    section.className = "sample";
+
+    // Use first sample as reference for audio, canonical
+    const refSample = groupSamples[0];
+
+    section.innerHTML = `<h2>Sample ${filename}</h2>
+      <audio controls style="margin: 8px 0;">
+        <source src="${refSample.audio}" type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+    `;
+
+    // Render canonical row only
+    const maxLen = refSample.canonical.length;
+
+    const table = document.createElement("table");
+    const rowLabels = ["Canonical"];
+    const sequences = [
+      refSample.canonical,
+    ];
+
+    rowLabels.forEach((label, rowIndex) => {
+      const tr = document.createElement("tr");
+
+      const th = document.createElement("th");
+      th.textContent = label;
+      tr.appendChild(th);
+
+      for(let i=0; i < maxLen; i++) {
+        const td = document.createElement("td");
+        const val = i < sequences[rowIndex].length ? sequences[rowIndex][i] : "";
+
+        td.textContent = val;
+
+        tr.appendChild(td);
+      }
+
+      table.appendChild(tr);
+    });
+
+    section.appendChild(table);
+
+    // Render all predictions for this group
+    groupSamples.forEach(sample => {
+      sample.predictions.forEach(pred => {
+        const predHeading = document.createElement("h3");
+        predHeading.textContent = `${sample.id} - ${pred.name}:`;
+        section.appendChild(predHeading);
+
+        const maxLenPred = Math.max(refSample.canonical.length, sample.perceived.length, pred.hyp_phonemes.length, pred.hyp_mark.length);
+
+        const predTable = document.createElement("table");
+        const predRowLabels = ["Perceived", "Hypothesis", "Mark", "Diagnosis Mark"];
+
+        // Compute diagnosisMarks array
+        const diagnosisMarks = [];
+        for(let i = 0; i < maxLenPred; i++) {
+          const canonicalPh = i < sample.canonical.length ? sample.canonical[i] : "";
+          const perceivedPh = i < sample.perceived.length ? sample.perceived[i] : "";
+          const hypPh = i < pred.hyp_phonemes.length ? pred.hyp_phonemes[i] : "";
+
+          const gtMark = (canonicalPh === perceivedPh) ? "=" : "S";
+          const hypMark = (perceivedPh === hypPh) ? "=" : "S";
+
+          if(gtMark === "S" && hypMark === "=") {
+            diagnosisMarks.push("CD");
+          } else if(gtMark === "S" && hypMark === "S") {
+            diagnosisMarks.push("ED");
+          } else {
+            diagnosisMarks.push("");
+          }
+        }
+
+        const predSequences = [
+          sample.perceived,
+          pred.hyp_phonemes,
+          pred.hyp_mark,
+          diagnosisMarks
+        ];
+
+        predRowLabels.forEach((label, rowIndex) => {
+          const tr = document.createElement("tr");
+
+          const th = document.createElement("th");
+          th.textContent = label;
+          tr.appendChild(th);
+
+          for(let i=0; i < maxLenPred; i++) {
+            const td = document.createElement("td");
+            const val = i < predSequences[rowIndex].length ? predSequences[rowIndex][i] : "";
+
+            td.textContent = val;
+
+            if(label === "Perceived") {
+              const canonicalPh = i < sample.canonical.length ? sample.canonical[i] : "";
+              if(val !== canonicalPh && val !== "") {
+                td.classList.add("gt-mismatch");
+              }
+            } else if(label === "Hypothesis") {
+              const perceivedPh = i < sample.perceived.length ? sample.perceived[i] : "";
+              if(val !== "") {
+                const cls = classify(i, sample, val);
+                if(cls === "true-accept") {
+                  td.classList.add("correct-rec");
+                } else if(cls === "true-reject") {
+                  td.classList.add("correct-diag");
+                } else if(cls === "false-reject") {
+                  td.classList.add("false-reject");
+                } else if(cls === "false-accept") {
+                  td.classList.add("incorrect-rec");
+                }
+              }
+            } else if(label === "Diagnosis Mark") {
+              if(val === "CD") {
+                td.classList.add("correct-diag");
+              } else if(val === "ED") {
+                td.classList.add("error-diag");
+              }
+            }
+
+            tr.appendChild(td);
+          }
+
+          predTable.appendChild(tr);
+        });
+
+        section.appendChild(predTable);
+      });
+    });
+
+    container.appendChild(section);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderGroupedSamples(samples);
+});
+</script>
+
+</body>
+</html>
