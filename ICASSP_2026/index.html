@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mispronunciation Detection & Diagnosis</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    .sample {
+      margin-bottom: 40px;
+    }
+    /* New plaintext row-based rendering styles */
+    pre.row {
+      font-family: monospace;
+      white-space: pre;
+      margin: 4px 0;
+    }
+    .gt-mismatch { background-color: #ffe2b3; }
+    .correct-rec { background-color: #d4f8d4; }
+    .false-reject { background-color: #f8d4d4; }
+    .correct-diag { background-color: #add8e6; } /* light blue */
+    .error-diag { background-color: #ffa500; } /* orange */
+    .pagination {
+      margin: 20px 0;
+      text-align: center;
+    }
+    .pagination button {
+      margin: 0 5px;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+    }
+    .pagination button:hover {
+      background: #f5f5f5;
+    }
+    .pagination button.active {
+      background: #007cba;
+      color: white;
+    }
+    .pagination button:disabled {
+      background: #f5f5f5;
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    .page-info {
+      margin: 10px 0;
+      text-align: center;
+      color: #666;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    td, th {
+      border: 1px solid #aaa;
+      padding: 4px 8px;
+      text-align: center;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Mispronunciation Visualization</h1>
+<div style="margin-bottom: 20px;">
+  <strong>Legend:</strong>
+  <div style="display: flex; gap: 12px; margin-top: 6px;">
+    <div><span class="gt-mismatch" style="padding: 2px 6px;">Mispronunciation</span></div>
+    <div><span class="correct-rec" style="padding: 2px 6px;">True Accept</span></div>
+    <div><span class="false-reject" style="padding: 2px 6px;">False Reject</span></div>
+    <div><span class="correct-diag" style="padding: 2px 6px;">Correct Diagnosis</span></div>
+    <div><span class="error-diag" style="padding: 2px 6px;">Error Diagnosis</span></div>
+  </div>
+</div>
+
+<div class="pagination" id="pagination">
+  <!-- Pagination controls will be generated here -->
+</div>
+
+<div class="page-info" id="pageInfo">
+  <!-- Page information will be displayed here -->
+</div>
+
+<div id="container"></div>
+
+<div class="pagination" id="paginationBottom">
+  <!-- Duplicate pagination at bottom -->
+</div>
+
+<script>
+// ------- Global variables -------
+let allSamples = [];
+let currentPage = 1;
+const samplesPerPage = 10;
+const randomSeed = 12345; // Fixed seed for consistent first page
+
+// ------- Utility functions -------
+// Simple seeded random number generator
+function seededRandom(seed) {
+  let x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+// Shuffle array with seed
+function shuffleWithSeed(array, seed) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Convert MPD JSON data to HTML format
+function convertMpdToHtmlFormat(mpdData) {
+  const samples = [];
+  
+  mpdData.records.forEach(record => {
+    // Extract filename from audio path
+    const audioPath = record.audio_path;
+    const filename = audioPath.split('/').pop().replace('.wav', '');
+    
+    // Create sample object in HTML format
+    const sample = {
+      id: `MPD Result - ${filename}`,
+      audio: `./wav/${filename}.wav`,
+      canonical: record.human_annotation.canonical || [],
+      perceived: record.human_annotation.perceived || [],
+      predictions: [
+        {
+          name: "Model Prediction",
+          hyp_phonemes: record.model_prediction.hypothesis || [],
+          hyp_mark: record.model_prediction.comparison || []
+        }
+      ]
+    };
+    
+    samples.push(sample);
+  });
+  
+  return samples;
+}
+
+// Load JSON data
+async function loadJsonData() {
+  try {
+    const response = await fetch('./results/EncDec/mpd_on_ctc.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const mpdData = await response.json();
+    return convertMpdToHtmlFormat(mpdData);
+  } catch (error) {
+    console.error('Error loading JSON data:', error);
+    // Fallback to empty array if JSON fails to load
+    return [];
+  }
+}
+
+// --------------------------------
+
+// Pagination functions
+function getTotalPages() {
+  return Math.ceil(allSamples.length / samplesPerPage);
+}
+
+function getCurrentPageSamples() {
+  const shuffledSamples = shuffleWithSeed(allSamples, randomSeed);
+  const startIndex = (currentPage - 1) * samplesPerPage;
+  const endIndex = startIndex + samplesPerPage;
+  return shuffledSamples.slice(startIndex, endIndex);
+}
+
+function renderPagination() {
+  const totalPages = getTotalPages();
+  
+  function createPaginationHTML() {
+    let html = '<button onclick="changePage(1)" ' + (currentPage === 1 ? 'disabled' : '') + '>First</button>';
+    html += '<button onclick="changePage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>Previous</button>';
+    
+    // Show page numbers
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+    
+    for (let i = startPage; i <= endPage; i++) {
+      html += '<button onclick="changePage(' + i + ')" ' + (i === currentPage ? 'class="active"' : '') + '>' + i + '</button>';
+    }
+    
+    html += '<button onclick="changePage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>Next</button>';
+    html += '<button onclick="changePage(' + totalPages + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>Last</button>';
+    
+    return html;
+  }
+  
+  const paginationHTML = createPaginationHTML();
+  document.getElementById("pagination").innerHTML = paginationHTML;
+  document.getElementById("paginationBottom").innerHTML = paginationHTML;
+  
+  // Update page info
+  const startRecord = (currentPage - 1) * samplesPerPage + 1;
+  const endRecord = Math.min(currentPage * samplesPerPage, allSamples.length);
+  document.getElementById("pageInfo").innerHTML = 
+    `Showing ${startRecord}-${endRecord} of ${allSamples.length} samples (Page ${currentPage} of ${totalPages})`;
+}
+
+function changePage(newPage) {
+  const totalPages = getTotalPages();
+  if (newPage >= 1 && newPage <= totalPages) {
+    currentPage = newPage;
+    renderCurrentPage();
+  }
+}
+
+function renderCurrentPage() {
+  const currentSamples = getCurrentPageSamples();
+  renderGroupedSamples(currentSamples);
+  renderPagination();
+}
+
+function classify(idx, sample, predictedPhoneme) {
+  const canonicalPh = sample.canonical[idx];
+  const perceivedPh = sample.perceived[idx];
+  const hypPh = predictedPhoneme;
+
+  if (canonicalPh !== perceivedPh && hypPh === perceivedPh) {
+    return "true-reject"; // Correct Diagnosis
+  }
+  if (canonicalPh !== perceivedPh && hypPh !== perceivedPh && hypPh !== "") {
+    return "false-reject"; // Error Diagnosis
+  }
+  if (canonicalPh === perceivedPh && hypPh === perceivedPh) {
+    return "true-accept"; // True Accept
+  }
+  if (canonicalPh !== perceivedPh && hypPh === canonicalPh) {
+    return "false-accept"; // False Accept
+  }
+  if (canonicalPh === perceivedPh && hypPh !== perceivedPh) {
+    return "false-reject"; // False Rejection (renamed from incorrect-rec)
+  }
+}
+
+function renderGroupedSamples(allSamples) {
+  const container = document.getElementById("container");
+  container.innerHTML = "";
+
+  // Group samples by audio filename (extract filename without path and extension)
+  const groups = {};
+  allSamples.forEach(sample => {
+    const match = sample.audio.match(/\/([^\/]+)\.wav$/);
+    const filename = match ? match[1] : sample.audio;
+    if (!groups[filename]) {
+      groups[filename] = [];
+    }
+    groups[filename].push(sample);
+  });
+
+  Object.entries(groups).forEach(([filename, groupSamples]) => {
+    const section = document.createElement("section");
+    section.className = "sample";
+
+    // Use first sample as reference for audio, canonical
+    const refSample = groupSamples[0];
+
+    section.innerHTML = `<h2>Sample ${filename}</h2>
+      <audio controls style="margin: 8px 0;">
+        <source src="${refSample.audio}" type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+    `;
+
+    // Render canonical row only
+    const maxLen = refSample.canonical.length;
+
+    const table = document.createElement("table");
+    const rowLabels = ["Canonical"];
+    const sequences = [
+      refSample.canonical,
+    ];
+
+    rowLabels.forEach((label, rowIndex) => {
+      const tr = document.createElement("tr");
+
+      const th = document.createElement("th");
+      th.textContent = label;
+      tr.appendChild(th);
+
+      for(let i=0; i < maxLen; i++) {
+        const td = document.createElement("td");
+        const val = i < sequences[rowIndex].length ? sequences[rowIndex][i] : "";
+
+        td.textContent = val;
+
+        tr.appendChild(td);
+      }
+
+      table.appendChild(tr);
+    });
+
+    section.appendChild(table);
+
+    // Render all predictions for this group
+    groupSamples.forEach(sample => {
+      sample.predictions.forEach(pred => {
+        const predHeading = document.createElement("h3");
+        predHeading.textContent = `${sample.id} - ${pred.name}:`;
+        section.appendChild(predHeading);
+
+        const maxLenPred = Math.max(refSample.canonical.length, sample.perceived.length, pred.hyp_phonemes.length, pred.hyp_mark.length);
+
+        const predTable = document.createElement("table");
+        const predRowLabels = ["Perceived", "Hypothesis", "Mark", "Diagnosis Mark"];
+
+        // Compute diagnosisMarks array
+        const diagnosisMarks = [];
+        for(let i = 0; i < maxLenPred; i++) {
+          const canonicalPh = i < sample.canonical.length ? sample.canonical[i] : "";
+          const perceivedPh = i < sample.perceived.length ? sample.perceived[i] : "";
+          const hypPh = i < pred.hyp_phonemes.length ? pred.hyp_phonemes[i] : "";
+
+          const gtMark = (canonicalPh === perceivedPh) ? "=" : "S";
+          const hypMark = (perceivedPh === hypPh) ? "=" : "S";
+
+          if(gtMark === "S" && hypMark === "=") {
+            diagnosisMarks.push("CD");
+          } else if(gtMark === "S" && hypMark === "S") {
+            diagnosisMarks.push("ED");
+          } else {
+            diagnosisMarks.push("");
+          }
+        }
+
+        const predSequences = [
+          sample.perceived,
+          pred.hyp_phonemes,
+          pred.hyp_mark,
+          diagnosisMarks
+        ];
+
+        predRowLabels.forEach((label, rowIndex) => {
+          const tr = document.createElement("tr");
+
+          const th = document.createElement("th");
+          th.textContent = label;
+          tr.appendChild(th);
+
+          for(let i=0; i < maxLenPred; i++) {
+            const td = document.createElement("td");
+            const val = i < predSequences[rowIndex].length ? predSequences[rowIndex][i] : "";
+
+            td.textContent = val;
+
+            if(label === "Perceived") {
+              const canonicalPh = i < sample.canonical.length ? sample.canonical[i] : "";
+              if(val !== canonicalPh && val !== "") {
+                td.classList.add("gt-mismatch");
+              }
+            } else if(label === "Hypothesis") {
+              const perceivedPh = i < sample.perceived.length ? sample.perceived[i] : "";
+              if(val !== "") {
+                const cls = classify(i, sample, val);
+                if(cls === "true-accept") {
+                  td.classList.add("correct-rec");
+                } else if(cls === "true-reject") {
+                  td.classList.add("correct-diag");
+                } else if(cls === "false-reject") {
+                  td.classList.add("false-reject");
+                } else if(cls === "false-accept") {
+                  td.classList.add("incorrect-rec");
+                }
+              }
+            } else if(label === "Diagnosis Mark") {
+              if(val === "CD") {
+                td.classList.add("correct-diag");
+              } else if(val === "ED") {
+                td.classList.add("error-diag");
+              }
+            }
+
+            tr.appendChild(td);
+          }
+
+          predTable.appendChild(tr);
+        });
+
+        section.appendChild(predTable);
+      });
+    });
+
+    container.appendChild(section);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  // Show loading message
+  document.getElementById("container").innerHTML = '<p>Loading data...</p>';
+  
+  try {
+    // Load data from JSON
+    allSamples = await loadJsonData();
+    
+    if (allSamples.length === 0) {
+      document.getElementById("container").innerHTML = '<p>No data found. Please check if the JSON file exists.</p>';
+      return;
+    }
+    
+    // Render first page
+    renderCurrentPage();
+  } catch (error) {
+    console.error('Error initializing:', error);
+    document.getElementById("container").innerHTML = '<p>Error loading data: ' + error.message + '</p>';
+  }
+});
+</script>
+
+</body>
+</html>
