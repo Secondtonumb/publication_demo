@@ -59,6 +59,9 @@ def parse_mpd_file(input_file):
                 canonical_line = lines[i + 1].strip()
                 comparison_line = lines[i + 2].strip()
                 perceived_line = lines[i + 3].strip()
+                canonical_seq = parse_phoneme_sequence(canonical_line)
+                comparison_seq = parse_phoneme_sequence(comparison_line)
+                perceived_seq = parse_phoneme_sequence(perceived_line)
                 
                 current_record['human_annotation'] = {
                     'canonical': parse_phoneme_sequence(canonical_line),
@@ -70,14 +73,14 @@ def parse_mpd_file(input_file):
         elif line == "Model Prediction: Canonical vs Hypothesis:":
             # Parse model prediction
             if i + 3 < len(lines):
-                canonical_line = lines[i + 1].strip()
-                comparison_line = lines[i + 2].strip()
-                hypothesis_line = lines[i + 3].strip()
+                canonical_line_hyp = lines[i + 1].strip()
+                comparison_line_hyp = lines[i + 2].strip()
+                hypothesis_line_hyp = lines[i + 3].strip()
                 
                 current_record['model_prediction'] = {
-                    'canonical': parse_phoneme_sequence(canonical_line),
-                    'comparison': parse_phoneme_sequence(comparison_line),
-                    'hypothesis': parse_phoneme_sequence(hypothesis_line)
+                    'canonical': parse_phoneme_sequence(canonical_line_hyp),
+                    'comparison': parse_phoneme_sequence(comparison_line_hyp),
+                    'hypothesis': parse_phoneme_sequence(hypothesis_line_hyp)
                 }
                 i += 3
                 
@@ -97,10 +100,37 @@ def parse_mpd_file(input_file):
                     'correct_diag': int(stats_match.group(5)),
                     'error_diag': int(stats_match.group(6))
                 }
+                
+        # def insert_eps(tokens, indices):
+        #     result = (len(tokens) + len(indices) ) * ['']  # pre-allocate space
+        #     for i, token in enumerate(tokens):
+        #         result[i + sum(1 for idx in indices if idx <= i)] = token
+        #     for idx in indices:
+        #         result[idx] = 'eps'
+        #     return result
         
+        # # when current_record['model_prediction']['comparison'] is not empty
+        # if current_record and 'model_prediction' in current_record and current_record['model_prediction'] != {}:
+        #     if current_record['model_prediction']['comparison'] is not None and 'I' in current_record['model_prediction']['comparison']:
+        #         if len(current_record['human_annotation']['perceived']) != len(current_record['model_prediction']['hypothesis']):
+        #             print(f"Warning: Length mismatch in record {current_record['audio_path']}")
+        #             print(f"Comparison length: {len(current_record['human_annotation']['perceived'])}, Hypothesis length: {len(current_record['model_prediction']['hypothesis'])}")
+        #             # Find the indices of 'I' in the comparison
+        #             indices = [idx for idx, val in enumerate(current_record['model_prediction']['comparison']) if val == 'I']
+                    
+        #             current_record['human_annotation']['perceived'] = insert_eps(current_record['human_annotation']['perceived'], indices)
+                    
+        #             current_record['human_annotation']['canonical'] = current_record['model_prediction']['canonical']
+        #             # import pdb; pdb.set_trace()
+
         i += 1
     
     # Add the last record if it exists
+    # align canonical, perceived and hypothesis length with mark symbols.
+    # IF I in mark symbols length, usually it means hypothesis has extra phonemes.
+    # THUS, we need to add eps token to both perceived and canonical sequences at relevant positions.
+    # import pdb; pdb.set_trace()
+    # Test if lengths match now
     if current_record:
         records.append(current_record)
     
@@ -127,6 +157,7 @@ def parse_phoneme_sequence(line):
     phonemes = [p for p in phonemes if p]
     
     return phonemes
+
 
 
 def save_to_json(records, output_file, indent=2):

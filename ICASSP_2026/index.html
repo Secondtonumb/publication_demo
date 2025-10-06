@@ -2,12 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mispronunciation Detection & Diagnosis</title>
+  <title>IF-MDD</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Mulish', 'Poppins', sans-serif;
       margin: 20px;
     }
+    .container {
+      width: 90%;
+      margin: auto;
+      overflow: hidden;
+      text-align: center;
+    }
+    header {
+      background: #003A91;
+      color: #fff;
+      padding: 20px 0 5px;
+      border-bottom: #77a6f7 3px solid;
+    }
+    header h1 {
+      font-size: 24px;
+      margin: 0 0 5px;
+      padding: 0;
+    }
+    .author-line h2, .author-line p {
+      display: inline;
+    }
+    .author-line h2 {
+      font-size: 1.2em;
+    }
+    .abstract-container, .abstract-table {
+        width: 90%;
+        margin: auto;
+        overflow: hidden;
+        text-align: center;
+      }
+      .abstract-text, .abstract-figure {
+        width: 90%;
+        text-align: center;
+        width: 100%;
+        padding: 5px;
+      }
+        /* ---------- Abstract Section ---------- */
+    #abstract {
+      width: 90%;
+      margin: 20px 0;
+      padding: 5px;
+      background: #fff;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    #abstract h3 {
+      margin-top: 0;
+      text-align: center;
+    }
+
     .sample {
       margin-bottom: 40px;
     }
@@ -21,6 +70,8 @@
     .correct-rec { background-color: #d4f8d4; }
     .false-reject { background-color: #f8d4d4; }
     .correct-diag { background-color: #add8e6; } /* light blue */
+    .false-accept { background-color: #bcbcbc; } /* light gray for FA */
+    .true-reject {background-color: #429742;}
     .error-diag { background-color: #ffa500; } /* orange */
     .pagination {
       margin: 20px 0;
@@ -60,20 +111,102 @@
       text-align: center;
       font-family: monospace;
     }
+
+     /* ---- Compact mode ---- */
+    body.compact {
+      margin: 12px;
+      font-size: 14px;
+    }
+    body.compact .sample { margin-bottom: 16px; }
+    body.compact h2 { margin: 4px 0 6px; font-size: 16px; }
+    body.compact h3 { margin: 4px 0; font-size: 13px; font-weight: 600; }
+    body.compact .page-info { margin: 6px 0; font-size: 12px; }
+    body.compact table {
+      table-layout: fixed;
+      width: 100%;
+      margin: 6px 0;
+    }
+    body.compact td, 
+    body.compact th {
+      padding: 2px 4px;
+      font-size: 12px;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    body.compact audio {
+      width: 280px;
+      height: 28px;
+    }
+
+    /* one-line transcript under each sample title */
+    body.compact .wrd {
+      margin: 2px 0 6px;
+      font-size: 12px;
+      font-style: italic;
+      color: #555;
+    }
   </style>
 </head>
 <body>
+  <header>
+    <div class="container">
+   <h1>IF-MDD: INDIRECT FUSION FOR PROMPT-FREE MISPRONUNCIATION DETECTION AND DIAGNOSIS</h1>
+      <section id="author-institution">
+        <div class="author-line">
+          <h2>Author: Haopeng Geng, Saito Daisuke, Nobuaki Minematsu
+          </h2>
+        </div>
+        <div class="author-line">
+          <h2>Institution: Graduate School of Engineering, The University of Tokyo</h2>
+        </div>
+      </section>
+    </div>
+  </header>
 
-<h1>Mispronunciation Visualization</h1>
+    <section id="introduction">
+    <table class="abstract-table" style="width: 90%; border-collapse: collapse; border-radius: 5px; ">
+        <thead>
+            <tr style="background: #003A91; color: #fff;">
+                <th style="width: 50%; padding: 5px; text-align: center;">
+                    <h2 style="margin: 0;">Abstract</h2>
+                </th>
+                <th style="width: 50%; padding: 5px; text-align: center;">
+                    <h2 style="margin: 0;">IF-MDD Overview</h2>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background: #fff;">
+                <td style="width: 35%; padding: 5px; border: 1px solid #ddd; vertical-align: top; text-align: left; border-radius: 5px;">
+                Mispronunciation detection and diagnosis (MDD) plays a vital role in computer-assisted language learning (CALL). Although recent approaches have achieved promising performance by leveraging canonical phonemes as auxiliary inputs, this reliance constrains their applicability in spontaneous language learning scenarios. In this work, we propose IF-MDD, an indirect fusion model that integrates canonical phoneme and error-related information as privileged information during training while obviating the requirement of text-prompting at inference. Despite being trained on limited data, IF-MDD achieved competitive diagnostic performance, reaching an F1 score of 60.67\% and an error diagnosis rate of 19.98\% on the L2-ARCTIC. Furthermore, experiments show that IF-MDD generalizes reliably to unseen speakers with diverse L1 backgrounds. These findings underscore the potential of IF-MDD as a scalable and practical solution for language learners. 
+                </td>
+                <td style="width: 50%; padding: 5px; border: 1px solid #ddd; vertical-align: top; text-align: center; border-radius: 5px;">
+                    <img src="fig/FUSEMDD.png" alt="IF-MDD Overview" style="width: 60%;">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+  
 <div style="margin-bottom: 20px;">
   <strong>Legend:</strong>
   <div style="display: flex; gap: 12px; margin-top: 6px;">
     <div><span class="gt-mismatch" style="padding: 2px 6px;">Mispronunciation</span></div>
     <div><span class="correct-rec" style="padding: 2px 6px;">True Accept</span></div>
+    <div><span class="false-accept" style="padding: 2px 6px;">False Accept</span></div>
     <div><span class="false-reject" style="padding: 2px 6px;">False Reject</span></div>
     <div><span class="correct-diag" style="padding: 2px 6px;">Correct Diagnosis</span></div>
     <div><span class="error-diag" style="padding: 2px 6px;">Error Diagnosis</span></div>
   </div>
+</div>
+
+<!-- View toggle: Pagination vs Multi-source Compare -->
+<div style="margin-bottom: 12px; display:flex; gap:8px; align-items:center;">
+  <div style="font-weight:600; margin-right:8px;">View:</div>
+  <button id="viewPaginationBtn" class="view-toggle-btn">Pagination</button>
+  <button id="viewCompareBtn" class="view-toggle-btn">Compare (multi-source)</button>
 </div>
 
 <div class="pagination" id="pagination">
@@ -91,326 +224,331 @@
 </div>
 
 <script>
-// ------- Global variables -------
-let allSamples = [];
-let currentPage = 1;
-const samplesPerPage = 10;
-const randomSeed = 12345; // Fixed seed for consistent first page
+// ------- Global config -------
+const PAGE_SIZE = 5;       // 固定第一页显示 5 个样本（每页 5 个）
+const TOTAL_SAMPLES = 50;  // 总计展示 50 个样本
+const RANDOM_SEED = 12345; // 固定种子，保证次序稳定
 
-// ------- Utility functions -------
-// Simple seeded random number generator
+
+let wrdByPath = {}; // { "<audio_path>": { wrd: "..." , ... }, ... }
+
+async function loadWrdMap() {
+  try {
+    const resp = await fetch('./results/test.json');
+    if (resp.ok) {
+      wrdByPath = await resp.json();
+    } else {
+      console.warn('Test.json not found or not ok:', resp.status);
+    }
+  } catch (e) {
+    console.warn('Failed to load Test.json:', e);
+  }
+}
+
+// ------- Utility: seeded shuffle -------
 function seededRandom(seed) {
   let x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
 }
-
-// Shuffle array with seed
 function shuffleWithSeed(array, seed) {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
+  const a = [...array];
+  for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(seededRandom(seed + i) * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  return shuffled;
+  return a;
 }
 
-// Convert MPD JSON data to HTML format
-function convertMpdToHtmlFormat(mpdData) {
-  const samples = [];
-  
-  mpdData.records.forEach(record => {
-    // Extract filename from audio path
-    const audioPath = record.audio_path;
-    const filename = audioPath.split('/').pop().replace('.wav', '');
-    
-    // Create sample object in HTML format
-    const sample = {
-      id: `MPD Result - ${filename}`,
-      audio: `./wav/${filename}.wav`,
-      canonical: record.human_annotation.canonical || [],
-      perceived: record.human_annotation.perceived || [],
-      predictions: [
-        {
-          name: "Model Prediction",
-          hyp_phonemes: record.model_prediction.hypothesis || [],
-          hyp_mark: record.model_prediction.comparison || []
-        }
-      ]
-    };
-    
-    samples.push(sample);
-  });
-  
-  return samples;
+// ------- Alignment check -------
+function isAlignedTriple(cano, perc, hypo) {
+  return Array.isArray(cano) && Array.isArray(perc) && Array.isArray(hypo) &&
+         cano.length === perc.length && perc.length === hypo.length;
 }
 
-// Load JSON data
-async function loadJsonData() {
-  try {
-    const response = await fetch('./results/EncDec/mpd_on_ctc.json');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const mpdData = await response.json();
-    return convertMpdToHtmlFormat(mpdData);
-  } catch (error) {
-    console.error('Error loading JSON data:', error);
-    // Fallback to empty array if JSON fails to load
-    return [];
-  }
-}
-
-// --------------------------------
-
-// Pagination functions
-function getTotalPages() {
-  return Math.ceil(allSamples.length / samplesPerPage);
-}
-
-function getCurrentPageSamples() {
-  const shuffledSamples = shuffleWithSeed(allSamples, randomSeed);
-  const startIndex = (currentPage - 1) * samplesPerPage;
-  const endIndex = startIndex + samplesPerPage;
-  return shuffledSamples.slice(startIndex, endIndex);
-}
-
-function renderPagination() {
-  const totalPages = getTotalPages();
-  
-  function createPaginationHTML() {
-    let html = '<button onclick="changePage(1)" ' + (currentPage === 1 ? 'disabled' : '') + '>First</button>';
-    html += '<button onclick="changePage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>Previous</button>';
-    
-    // Show page numbers
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
-    
-    for (let i = startPage; i <= endPage; i++) {
-      html += '<button onclick="changePage(' + i + ')" ' + (i === currentPage ? 'class="active"' : '') + '>' + i + '</button>';
-    }
-    
-    html += '<button onclick="changePage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>Next</button>';
-    html += '<button onclick="changePage(' + totalPages + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>Last</button>';
-    
-    return html;
-  }
-  
-  const paginationHTML = createPaginationHTML();
-  document.getElementById("pagination").innerHTML = paginationHTML;
-  document.getElementById("paginationBottom").innerHTML = paginationHTML;
-  
-  // Update page info
-  const startRecord = (currentPage - 1) * samplesPerPage + 1;
-  const endRecord = Math.min(currentPage * samplesPerPage, allSamples.length);
-  document.getElementById("pageInfo").innerHTML = 
-    `Showing ${startRecord}-${endRecord} of ${allSamples.length} samples (Page ${currentPage} of ${totalPages})`;
-}
-
-function changePage(newPage) {
-  const totalPages = getTotalPages();
-  if (newPage >= 1 && newPage <= totalPages) {
-    currentPage = newPage;
-    renderCurrentPage();
-  }
-}
-
-function renderCurrentPage() {
-  const currentSamples = getCurrentPageSamples();
-  renderGroupedSamples(currentSamples);
-  renderPagination();
-}
-
-function classify(idx, sample, predictedPhoneme) {
+// ------ 判别函数（与分页/对比一致的规则） ------
+function classify(idx, sample, predictedPhoneme, mark) {
   const canonicalPh = sample.canonical[idx];
   const perceivedPh = sample.perceived[idx];
   const hypPh = predictedPhoneme;
 
-  if (canonicalPh !== perceivedPh && hypPh === perceivedPh) {
-    return "true-reject"; // Correct Diagnosis
-  }
-  if (canonicalPh !== perceivedPh && hypPh !== perceivedPh && hypPh !== "") {
-    return "false-reject"; // Error Diagnosis
-  }
-  if (canonicalPh === perceivedPh && hypPh === perceivedPh) {
-    return "true-accept"; // True Accept
-  }
-  if (canonicalPh !== perceivedPh && hypPh === canonicalPh) {
-    return "false-accept"; // False Accept
-  }
-  if (canonicalPh === perceivedPh && hypPh !== perceivedPh) {
-    return "false-reject"; // False Rejection (renamed from incorrect-rec)
-  }
+  if (hypPh === canonicalPh && canonicalPh !== perceivedPh) return "false-accept";
+  if (perceivedPh !== canonicalPh && mark !== "=") return "true-reject";
+  if (hypPh !== canonicalPh && canonicalPh === perceivedPh) return "false-reject";
+  if (hypPh === canonicalPh && canonicalPh === perceivedPh) return "true-accept";
+  return "unknown";
 }
 
-function renderGroupedSamples(allSamples) {
-  const container = document.getElementById("container");
-  container.innerHTML = "";
+function judgeDiag(mark, hyp, perc) {
+  if (mark === "S" || mark === "I") {
+    return (perc === hyp) ? "CD" : "ED";
+  } else if (mark === "D") {
+    return ((perc === hyp) && hyp === "<eps>") ? "CD" : "ED";
+  }
+  return "";
+}
 
-  // Group samples by audio filename (extract filename without path and extension)
-  const groups = {};
-  allSamples.forEach(sample => {
-    const match = sample.audio.match(/\/([^\/]+)\.wav$/);
-    const filename = match ? match[1] : sample.audio;
-    if (!groups[filename]) {
-      groups[filename] = [];
-    }
-    groups[filename].push(sample);
-  });
-
-  Object.entries(groups).forEach(([filename, groupSamples]) => {
-    const section = document.createElement("section");
-    section.className = "sample";
-
-    // Use first sample as reference for audio, canonical
-    const refSample = groupSamples[0];
-
-    section.innerHTML = `<h2>Sample ${filename}</h2>
-      <audio controls style="margin: 8px 0;">
-        <source src="${refSample.audio}" type="audio/wav">
-        Your browser does not support the audio element.
-      </audio>
-    `;
-
-    // Render canonical row only
-    const maxLen = refSample.canonical.length;
-
-    const table = document.createElement("table");
-    const rowLabels = ["Canonical"];
-    const sequences = [
-      refSample.canonical,
-    ];
-
-    rowLabels.forEach((label, rowIndex) => {
-      const tr = document.createElement("tr");
-
-      const th = document.createElement("th");
-      th.textContent = label;
-      tr.appendChild(th);
-
-      for(let i=0; i < maxLen; i++) {
-        const td = document.createElement("td");
-        const val = i < sequences[rowIndex].length ? sequences[rowIndex][i] : "";
-
-        td.textContent = val;
-
-        tr.appendChild(td);
+function applyCellHighlight(td, label, i, sequences, sampleLikeObj) {
+  if (label === "Perceived") {
+    const cano = sequences.canonical[i] ?? "";
+    const perc = sequences.perceived[i] ?? "";
+    if (perc !== "" && cano !== "" && perc !== cano) td.classList.add("gt-mismatch");
+  } else if (label === "Hypothesis") {
+    const hyp  = sequences.hypothesis[i] ?? "";
+    const mark = sequences.mark[i] ?? "";
+    if (hyp !== "") {
+      const cls = classify(i, sampleLikeObj, hyp, mark);
+      if (cls === "true-accept") {
+        td.classList.add("correct-rec");
+      } else if (cls === "true-reject") {
+        // —— 这里按 CD / ED 区分高亮 ——
+        const perc = sequences.perceived[i] ?? "";
+        const diag = judgeDiag(mark, hyp, perc); // "CD" | "ED" | ""
+        if (diag === "CD") td.classList.add("correct-diag"); // 蓝
+        else if (diag === "ED") td.classList.add("error-diag"); // 橙
+        else td.classList.add("correct-diag"); // 默认为正确诊断
+      } else if (cls === "false-reject") {
+        td.classList.add("false-reject");
+      } else if (cls === "false-accept") {
+        td.classList.add("false-accept");
       }
-
-      table.appendChild(tr);
-    });
-
-    section.appendChild(table);
-
-    // Render all predictions for this group
-    groupSamples.forEach(sample => {
-      sample.predictions.forEach(pred => {
-        const predHeading = document.createElement("h3");
-        predHeading.textContent = `${sample.id} - ${pred.name}:`;
-        section.appendChild(predHeading);
-
-        const maxLenPred = Math.max(refSample.canonical.length, sample.perceived.length, pred.hyp_phonemes.length, pred.hyp_mark.length);
-
-        const predTable = document.createElement("table");
-        const predRowLabels = ["Perceived", "Hypothesis", "Mark", "Diagnosis Mark"];
-
-        // Compute diagnosisMarks array
-        const diagnosisMarks = [];
-        for(let i = 0; i < maxLenPred; i++) {
-          const canonicalPh = i < sample.canonical.length ? sample.canonical[i] : "";
-          const perceivedPh = i < sample.perceived.length ? sample.perceived[i] : "";
-          const hypPh = i < pred.hyp_phonemes.length ? pred.hyp_phonemes[i] : "";
-
-          const gtMark = (canonicalPh === perceivedPh) ? "=" : "S";
-          const hypMark = (perceivedPh === hypPh) ? "=" : "S";
-
-          if(gtMark === "S" && hypMark === "=") {
-            diagnosisMarks.push("CD");
-          } else if(gtMark === "S" && hypMark === "S") {
-            diagnosisMarks.push("ED");
-          } else {
-            diagnosisMarks.push("");
-          }
-        }
-
-        const predSequences = [
-          sample.perceived,
-          pred.hyp_phonemes,
-          pred.hyp_mark,
-          diagnosisMarks
-        ];
-
-        predRowLabels.forEach((label, rowIndex) => {
-          const tr = document.createElement("tr");
-
-          const th = document.createElement("th");
-          th.textContent = label;
-          tr.appendChild(th);
-
-          for(let i=0; i < maxLenPred; i++) {
-            const td = document.createElement("td");
-            const val = i < predSequences[rowIndex].length ? predSequences[rowIndex][i] : "";
-
-            td.textContent = val;
-
-            if(label === "Perceived") {
-              const canonicalPh = i < sample.canonical.length ? sample.canonical[i] : "";
-              if(val !== canonicalPh && val !== "") {
-                td.classList.add("gt-mismatch");
-              }
-            } else if(label === "Hypothesis") {
-              const perceivedPh = i < sample.perceived.length ? sample.perceived[i] : "";
-              if(val !== "") {
-                const cls = classify(i, sample, val);
-                if(cls === "true-accept") {
-                  td.classList.add("correct-rec");
-                } else if(cls === "true-reject") {
-                  td.classList.add("correct-diag");
-                } else if(cls === "false-reject") {
-                  td.classList.add("false-reject");
-                } else if(cls === "false-accept") {
-                  td.classList.add("incorrect-rec");
-                }
-              }
-            } else if(label === "Diagnosis Mark") {
-              if(val === "CD") {
-                td.classList.add("correct-diag");
-              } else if(val === "ED") {
-                td.classList.add("error-diag");
-              }
-            }
-
-            tr.appendChild(td);
-          }
-
-          predTable.appendChild(tr);
-        });
-
-        section.appendChild(predTable);
-      });
-    });
-
-    container.appendChild(section);
-  });
+    }
+  } else if (label === "Diagnosis Mark") {
+    const val = (sequences.diagnosis[i] ?? "").toString();
+    if (val === "FR") td.classList.add("false-reject");
+    else if (val === "FA") td.classList.add("false-accept");
+    else if (val === "CD") td.classList.add("correct-diag");
+    else if (val === "ED") td.classList.add("error-diag");
+  }
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  // Show loading message
-  document.getElementById("container").innerHTML = '<p>Loading data...</p>';
-  
-  try {
-    // Load data from JSON
-    allSamples = await loadJsonData();
-    
-    if (allSamples.length === 0) {
-      document.getElementById("container").innerHTML = '<p>No data found. Please check if the JSON file exists.</p>';
-      return;
+function extractSpeakerIdFromPath(p) {
+  // e.g. ".../NJS/wav/arctic_a0003.wav" -> "NJS"
+  const parts = (p || "").split("/");
+  // 找到 "wav" 的位置，Speaker ID 就在它前面
+  const wavIdx = parts.lastIndexOf("wav");
+  if (wavIdx > 0) return parts[wavIdx - 1];
+  // fallback: 父目录
+  return parts.length >= 2 ? parts[parts.length - 2] : "";
+}
+
+// ------- Compare only: load & render -------
+async function loadAndCompareResults() {
+  const dataSources = [
+    { name: 'IF-MDD-CTC', url: './results/EncDec/mpd_on_ctc.json' },
+    { name: 'IF-MDD-Seq', url: './results/EncDec/mpd_on_seq.json' },
+    { name: 'MPL-MDD',    url: './results/MPL-MDD/MPL-MDD.json' }
+  ];
+
+  const dataMap = {};
+  const loadedSources = [];
+
+  // 加载所有来源
+  for (const source of dataSources) {
+    try {
+      const resp = await fetch(source.url);
+      if (resp.ok) {
+        const data = await resp.json();
+        const map = {};
+        (data.records || []).forEach(r => { map[r.audio_path] = r; });
+        dataMap[source.name] = map;
+        loadedSources.push(source.name);
+      }
+    } catch (e) {
+      console.error(`Error loading ${source.name}:`, e);
     }
-    
-    // Render first page
-    renderCurrentPage();
-  } catch (error) {
-    console.error('Error initializing:', error);
-    document.getElementById("container").innerHTML = '<p>Error loading data: ' + error.message + '</p>';
+  }
+
+  if (loadedSources.length === 0) {
+    document.getElementById("container").innerHTML = '<p>数据加载失败</p>';
+    return;
+  }
+
+  // 求交集，并仅保留三者长度一致的样本（在每个已加载数据源内都满足）
+  const allPaths = Object.keys(dataMap[loadedSources[0]] || {});
+  let audioPaths = allPaths.filter(path =>
+    loadedSources.every(source => {
+      const rec = dataMap[source][path];
+      if (!rec) return false;
+      const cano = rec.human_annotation.canonical || [];
+      const perc = rec.human_annotation.perceived || [];
+      const hypo = rec.model_prediction.hypothesis || [];
+      return isAlignedTriple(cano, perc, hypo);
+    })
+  );
+
+  // 固定种子 shuffle，并限制总量 50
+  audioPaths = shuffleWithSeed(audioPaths, RANDOM_SEED).slice(0, TOTAL_SAMPLES);
+
+  // 内部分页（每页 5 个）
+  const totalPages = Math.max(1, Math.ceil(audioPaths.length / PAGE_SIZE));
+  let page = 1;
+
+  function renderPage() {
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    const pagePaths = audioPaths.slice(start, end);
+    const container = document.getElementById("container");
+    container.innerHTML = "";
+
+    pagePaths.forEach(path => {
+      const filename = path.split('/').pop();
+      const speakerId = extractSpeakerIdFromPath(path);
+      const section = document.createElement('section');
+      section.className = 'sample';
+
+      // 取 WRD：Test.json 的 key 必须与 record.audio_path 完全一致
+      const wrd = (wrdByPath[path] && wrdByPath[path].wrd) ? wrdByPath[path].wrd : "";
+
+      // 标题 + 一行 wrd（若有）
+      section.innerHTML = `<h2>${speakerId ? speakerId + ' · ' : ''}${filename}</h2>` +
+                          (wrd ? `<div class="wrd">"${wrd}"</div>` : '');
+
+      loadedSources.forEach(sourceName => {
+        const record = dataMap[sourceName][path];
+        if (record) {
+          section.innerHTML += `<h3>${sourceName}</h3>`;
+          section.appendChild(renderCompareTable(
+            record.model_prediction.hypothesis,
+            record.model_prediction.comparison,
+            record.human_annotation.perceived,
+            record.human_annotation.canonical,
+            path,
+            record.statistics   // 新增参数
+          ));
+        }
+      });
+
+      container.appendChild(section);
+    });
+
+    // 分页控件（保留 compare 内分页）
+    let pagHtml = `<div class='pagination'>`;
+    pagHtml += `<button onclick='window._cmpPage(1)' ${page===1?'disabled':''}>首页</button>`;
+    pagHtml += `<button onclick='window._cmpPage(${page-1})' ${page===1?'disabled':''}>上一页</button>`;
+    for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+      pagHtml += `<button onclick='window._cmpPage(${i})' ${i===page?'class="active"':''}>${i}</button>`;
+    }
+    pagHtml += `<button onclick='window._cmpPage(${page+1})' ${page===totalPages?'disabled':''}>下一页</button>`;
+    pagHtml += `<button onclick='window._cmpPage(${totalPages})' ${page===totalPages?'disabled':''}>末页</button>`;
+    pagHtml += `</div>`;
+
+    container.innerHTML += pagHtml;
+    window._cmpPage = function(p){ if(p>=1 && p<=totalPages){ page = p; renderPage(); } };
+  }
+
+  renderPage();
+}
+
+// Compare 表格（含 FR/FA 覆盖逻辑）
+function renderCompareTable(hypoArr, markArr, perceivedArr, canonicalArr, audioPath, statistics) {
+  const maxLen = canonicalArr.length;
+  const diagnosisMarks = [];
+  for (let i = 0; i < maxLen; i++) {
+    const hypPh = hypoArr[i];
+    const mark = markArr[i];
+    const perceivedPh = perceivedArr[i];
+
+    // 覆盖 FR / FA
+    const sampleLikeObj = { canonical: canonicalArr, perceived: perceivedArr };
+    const cls = classify(i, sampleLikeObj, hypPh, mark);
+    if (cls === "false-reject") { diagnosisMarks.push("FR"); continue; }
+    if (cls === "false-accept") { diagnosisMarks.push("FA"); continue; }
+
+    let diag = "";
+    if (mark === "S" || mark === "I") {
+      diag = (perceivedPh === hypPh) ? "CD" : "ED";
+    } else if (mark === "D") {
+      diag = ((perceivedPh === hypPh) && hypPh === "<eps>") ? "CD" : "ED";
+    }
+    diagnosisMarks.push(diag);
+  }
+
+  const table = document.createElement("table");
+  const rowLabels = ["Canonical", "Perceived", "Hypothesis", "Mark", "Diagnosis Mark"];
+  const seqObj = { canonical: canonicalArr, perceived: perceivedArr, hypothesis: hypoArr, mark: markArr, diagnosis: diagnosisMarks };
+
+  rowLabels.forEach(label => {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    th.textContent = label;
+    tr.appendChild(th);
+    for (let i = 0; i < maxLen; i++) {
+      const td = document.createElement("td");
+      const val = (label === "Canonical") ? seqObj.canonical[i]
+                : (label === "Perceived") ? seqObj.perceived[i]
+                : (label === "Hypothesis") ? seqObj.hypothesis[i]
+                : (label === "Mark") ? seqObj.mark[i]
+                : seqObj.diagnosis[i];
+      td.textContent = val ?? "";
+      const sampleLikeObj = { canonical: canonicalArr, perceived: perceivedArr };
+      applyCellHighlight(td, label, i, seqObj, sampleLikeObj);
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  });
+
+  const wrapper = document.createElement('div');
+  wrapper.style.marginBottom = '12px';
+
+  if (audioPath) {
+    const audioEl = document.createElement('audio');
+    audioEl.controls = true;
+    audioEl.style.display = 'block';
+    audioEl.style.marginBottom = '6px';
+    const srcEl = document.createElement('source');
+    srcEl.src = audioPath;
+    srcEl.type = 'audio/wav';
+    audioEl.appendChild(srcEl);
+    audioEl.appendChild(document.createTextNode('Your browser does not support the audio element.'));
+    wrapper.appendChild(audioEl);
+  }
+
+  wrapper.appendChild(table);
+
+  // ---- 在这里追加统计表 ----
+  if (statistics) {
+    const statTable = document.createElement("table");
+    const header = document.createElement("tr");
+    Object.keys(statistics).forEach(k => {
+      const th = document.createElement("th");
+      th.textContent = k;
+      header.appendChild(th);
+    });
+    statTable.appendChild(header);
+
+    const values = document.createElement("tr");
+    Object.values(statistics).forEach(v => {
+      const td = document.createElement("td");
+      td.textContent = v;
+      values.appendChild(td);
+    });
+    statTable.appendChild(values);
+
+    wrapper.appendChild(statTable);
+  }
+
+  return wrapper;
+}
+
+// ---- Init: Compare only ----
+// document.body.classList.add('compact'); // 启用紧凑模式
+window.addEventListener('DOMContentLoaded', async () => {
+  // 隐藏原有的分页/视图切换 UI（只展示 compare）
+  const hide = id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; };
+  hide('pagination');
+  hide('paginationBottom');
+  hide('pageInfo');
+  const toggleBtns = document.querySelectorAll('.view-toggle-btn');
+  toggleBtns.forEach(b => b.style.display = 'none');
+
+  
+  document.getElementById("container").innerHTML = '<p>Loading data...</p>';
+  try {
+    await loadWrdMap();          // 先把 Test.json 读进来
+    await loadAndCompareResults();
+  } catch (e) {
+    console.error(e);
+    document.getElementById("container").innerHTML = '<p>Error loading data.</p>';
   }
 });
 </script>

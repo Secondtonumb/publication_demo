@@ -1,11 +1,5 @@
 MPD results and stats:
 In original annotation: 
-Total Eq: 25702, Total Sub: 3143, Total Del: 941, Total Ins: 242
-Overall MPD results: 
-True Accept: 24132, False Rejection: 2097, False Accept: 2019, True Rejection: 2307, Corr Diag: 1729, Err Diag: 578
-Percentages/Counts: TA%/TA: 92.01/24132  FR%/FR: 7.99/2097  FA%/FA: 46.67/2019  TR%/TR: 53.33/2307  Cor_diag%/Cor_diag: 74.95/1729  Err_diag%/Err_diag: 25.05/578
-Precision: 0.523841961852861, Recall: 0.5332871012482663, F1: 0.5285223367697596
-NEW MPD stats: 
 Total Eq: 26144, Total Sub: 3143, Total Del: 941, Total Ins: 242
 New MPD results: 
 True Accept: 24130, False Rejection: 1572, False Accept: 1758, True Rejection: 2568, Correct Diag: 2014, Error Diag: 554
